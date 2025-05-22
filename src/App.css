@@ -1,0 +1,14 @@
+/* app.css */
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  margin: 0 auto;
+  max-width: 1400px; 
+}
