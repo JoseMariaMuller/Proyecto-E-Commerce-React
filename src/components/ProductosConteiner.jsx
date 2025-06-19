@@ -1,27 +1,22 @@
 import { useEffect, useState } from "react"
 import "../styles/Productos.css"
 import Card from "./Card"
+import { useProductosContext } from "../contexts/ProductosContext"
+import { useAuthContext } from "../contexts/AuthContext"
 
-function ProductosContainer(){
-    const [productos, setProductos] = useState([])
+function ProductosContainer({}){
+    const {productos, obtenerProductos} = useProductosContext();
+    //const [productosComponente, setProductosComponente] = useState([])
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState(null);
 
     {useEffect(() => {
-        fetch('https://681c09aa6ae7c794cf707bcb.mockapi.io/productos')
-            .then((respuesta) =>
-                respuesta.json()
-            )
-            .then((datos) => {
-                console.log(datos)
-                setProductos(datos)
-                setCargando(false);
-            })
-            .catch((error) => {
-                console.log("Error", error)
-                setError('Hubo un problema al cargar los productos.');
-                setCargando(false);
-            });
+        obtenerProductos().then((productos) => {
+            setCargando(false);
+        }).catch((error) => {
+            setError('Hubo un problema al cargar los productos.');
+            setCargando(false);
+        })
     }, []);}
 
 

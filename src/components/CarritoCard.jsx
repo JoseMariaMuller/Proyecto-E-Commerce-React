@@ -19,7 +19,7 @@ function CarritoCard({producto, funcionDisparadora}){
             <div className="carrito-sub">
                 <span style={{color:"black"}}>{producto.cantidad * producto.price} $</span>
             </div>
-            <button className="boton-carrito" onClick={borrarDelCarrito} >X</button>
+            <button className="boton-carrito" onClick={borrarDelCarrito} style={{backgroundColor: "red" ,color:"black"}}>X</button>
         </div>
     )
 }

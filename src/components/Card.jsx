@@ -1,4 +1,4 @@
-
+/* eslint-disable */
 import "../styles/Productos.css"
 
 import { Link, Navigate } from "react-router-dom";
