@@ -24,3 +24,7 @@ dist-ssr
 *.sw?
 
 src/auth/firebase.js
+
+# Archivos de variables de entorno
+.env.development
+.env.production
