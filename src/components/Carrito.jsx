@@ -1,4 +1,3 @@
-/* eslint-disable */
 import "../styles/Carrito.css"
 import { useContext, useEffect, useState } from "react";
 import CarritoCard from "./CarritoCard.jsx";
@@ -34,7 +33,7 @@ export default function Carrito() {
     return(
         <div className="carrito-conteiner">
             <button onClick={funcionDisparadora2}>Vaciar carrito</button>
-            {/* <div className="carrito-titulos" >
+            <div className="carrito-titulos" >
                 <h2 className="carrito-titulo-producto"> Producto </h2>
                 <h2 className="carrito-titulo-descripcion">Descripción</h2>
                 <h2>  </h2>
@@ -42,7 +41,7 @@ export default function Carrito() {
                 <h2> Precio unitario </h2>
                 <h2> Sub total </h2>
                 <h2>  </h2>
-            </div> */}
+            </div>
             {productosCarrito.length > 0 ? productosCarrito.map((producto) => (
                 <CarritoCard 
                     producto={producto}

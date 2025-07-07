@@ -1,11 +1,10 @@
-
 .main-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem 1rem;
     text-align: center;
-    
-    
+
+
 }
 
 .main-title {
@@ -36,7 +35,7 @@
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
     margin: 3rem 0;
-    
+
 }
 
 .benefit-card {
@@ -45,7 +44,7 @@
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s, box-shadow 0.3s;
-    
+
 }
 
 .benefit-card:hover {
@@ -74,3 +73,52 @@
     background-color: #3812d2;
 }
 
+.carousel-caption {
+    background-color: rgba(0, 0, 0, 0.5); 
+    padding: 1rem;
+    border-radius: 8px;
+    max-width: 90%;
+    margin: auto;
+    height: auto;
+}
+
+.carousel-caption h5 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #b4a2fe; 
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+    margin-bottom: 0.5rem;
+    word-break: break-word;
+}
+
+.carousel-caption p {
+    font-size: 0.75rem;
+    color: #ffffff; 
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+    margin-bottom: 0;
+    word-break: break-word;
+    line-height: 1.2;
+}
+
+.carousel-item img {
+    transition: transform 0.3s ease;
+    border-radius: 8px;
+}
+
+.carousel-item img:hover {
+    transform: scale(1.02);
+}
+
+@media (max-width: 576px) {
+    .carousel-caption {
+        padding: 0.5rem;
+    }
+
+    .carousel-caption h5 {
+        font-size: 1rem;
+    }
+
+    .carousel-caption p {
+        font-size: 0.65rem;
+    }
+}

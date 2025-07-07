@@ -1,0 +1,72 @@
+.reseñas-carousel-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.reseñas-carousel-container h4 {
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+}
+
+.reseña-card {
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background-color: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 8px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: default;
+    border-bottom: 3px solid transparent;
+}
+
+.reseña-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Línea azul animada */
+.reseña-card::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 3px;
+    background-color: #b4a2fe;
+    transition: width 0.3s ease, left 0.3s ease;
+    border-radius: 2px;
+}
+
+.reseña-card:hover::after {
+    width: 100%;
+    left: 0;
+}
+
+.reseña-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #b4a2fe;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    margin-bottom: 1rem;
+}
+
+.reseña-card p {
+    font-size: 1.1rem;
+    color: #444;
+    text-align: center;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+}
+
+.reseña-card small {
+    font-size: 0.9rem;
+    color: #888;
+    text-align: center;
+}

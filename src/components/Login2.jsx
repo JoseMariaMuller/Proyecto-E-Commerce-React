@@ -7,116 +7,125 @@ import { dispararSweetBasico } from '../assets/SweetAlert';
 function Login2() {
   const [usuario, setUsuario] = useState('');
   const [password, setPassword] = useState('');
-  const [show, setShow] = useState(true)
-  const { login, user, logout, admin } = useAuthContext();
+  const [show, setShow] = useState(true);
+  const { login, user, logout, admin, logearGmail } = useAuthContext();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  function registrarUsuario(e) {
     e.preventDefault();
-    // Simulación de autenticación
-    if (usuario === 'admin' && password === '1234') {
-      login(usuario);
-      navigate('/');
-    } else {
-      alert('Credenciales incorrectas');
-    }
-  };
-
-  function registrarUsuario (e) {
-    e.preventDefault();
-    crearUsuario(usuario, password).then((user) => {
-      login(usuario)
-      dispararSweetBasico("Logeo exitoso", "", "success", "Confirmar")
-    }).catch((error) => {
-      if(error.code == "auth/invalid-credential"){
-        dispararSweetBasico("Credenciales incorrectas", "", "error", "Cerrar")
-      }if(error.code == "auth/weak-password"){
-        dispararSweetBasico("Contraseña debil", "Password should be at least 6 characters", "error", "Cerrar")
-      }
-      //alert("Error")
-    })
+    crearUsuario(usuario, password)
+      .then(() => {
+        login(usuario);
+        dispararSweetBasico("Registro exitoso", "", "success", "Confirmar");
+      })
+      .catch((error) => {
+        if (error.code === "auth/invalid-credential") {
+          dispararSweetBasico("Credenciales incorrectas", "", "error", "Cerrar");
+        }
+        if (error.code === "auth/weak-password") {
+          dispararSweetBasico("Contraseña débil", "Debe tener al menos 6 caracteres", "error", "Cerrar");
+        }
+      });
   }
 
-  const handleSubmit2 = (e) => {
-    logout()
-  }
-
-  function iniciarSesionEmailPass (e) {
+  function iniciarSesionEmailPass(e) {
     e.preventDefault();
-    loginEmailPass(usuario, password).then((user) => {
-      login(usuario)
-      dispararSweetBasico("Logeo exitoso", "", "success", "Confirmar")
-    }).catch((error) => {
-      if(error.code == "auth/invalid-credential"){
-        dispararSweetBasico("Credenciales incorrectas", "", "error", "Cerrar")
-      }
-      //alert("Error")
-    })
+    loginEmailPass(usuario, password)
+      .then(() => {
+        login(usuario);
+        dispararSweetBasico("Inicio de sesión exitoso", "", "success", "Confirmar");
+      })
+      .catch((error) => {
+        if (error.code === "auth/invalid-credential") {
+          dispararSweetBasico("Credenciales incorrectas", "", "error", "Cerrar");
+        }
+      });
   }
 
-  function handleShow (e) {
+  function handleShow(e) {
     e.preventDefault();
-    setShow(!show)
+    setShow(!show);
   }
 
-  if(user || admin){
-    return(
-        <form onSubmit={handleSubmit2}>
-        <button type="submit">Cerrar sesión</button>
-        </form>
-    )
-  }if(!user && show){
-    return(
-      <div>
-        <form onSubmit={iniciarSesionEmailPass}>
-          <h2>Iniciar sesión con Email y pass</h2>
-          <div>
-            <label>Email</label>
-            <input
-              type="text"
-              value={usuario}
-              onChange={(e) => setUsuario(e.target.value)}
-            />
-          </div>
-          <div>
-            <label>Contraseña:</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <button type="submit">Iniciar sesión</button>
-        </form>
-        <button style={{marginTop:"2px"}}  onClick={handleShow}>Registrate</button>
-      </div>
-    )
-  }if(!user && !show){
-    return(
-    <div>
-      <form onSubmit={registrarUsuario}>
-        <h2>Registrarse</h2>
-        <div>
-          <label>Email:</label>
+  function logInGmail() {
+    logearGmail();
+  }
+
+  function handleLogout(e) {
+    e.preventDefault();
+    logout();
+  }
+
+  if (user || admin) {
+    return (
+      <form onSubmit={handleLogout} className="text-center mt-5">
+        <button type="submit" className="btn btn-danger">Cerrar sesión</button>
+      </form>
+    );
+  }
+
+  return (
+    <div className="d-flex justify-content-center align-items-center min-vh-100">
+      <form
+        onSubmit={show ? iniciarSesionEmailPass : registrarUsuario}
+        className="p-4 bg-white border rounded shadow w-100"
+        style={{ maxWidth: "400px" }}
+      >
+        <h3 className="mb-4 text-center">{show ? "Iniciar Sesión" : "Registrarse"}</h3>
+
+        <div className="mb-3">
+          <label className="form-label">Email</label>
           <input
-            type="text"
             value={usuario}
             onChange={(e) => setUsuario(e.target.value)}
+            type="email"
+            className="form-control"
+            required
           />
         </div>
-        <div>
-          <label>Contraseña:</label>
+
+        <div className="mb-4">
+          <label className="form-label">Contraseña</label>
           <input
-            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            type="password"
+            className="form-control"
+            required
           />
         </div>
-        <button type="submit">Registrase</button>
+
+        <div className="d-flex justify-content-between mb-3">
+          <button type="submit" className="btn btn-primary w-50 me-2">
+            {show ? "Ingresar" : "Registrarse"}
+          </button>
+          <button className="btn btn-secondary w-50" onClick={handleShow}>
+            {show ? "Registrarse" : "Iniciar Sesión"}
+          </button>
+        </div>
+
+        {show && (
+          <>
+            <hr />
+            <button
+              type="button"
+              className="btn btn-outline-dark btn-lg w-100 d-flex align-items-center justify-content-center gap-2"
+              onClick={logInGmail}
+            >
+              <img
+                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                alt="Google logo"
+                width="24"
+                height="24"
+              />
+              Iniciar sesión con Google
+            </button>
+          </>
+        )}
+
       </form>
-      <button style={{marginTop:"2px"}} onClick={handleShow}>Iniciar Sesión</button>
     </div>
-    )
-  }
+  );
 }
+
 export default Login2;

@@ -1,5 +1,8 @@
-import '../styles/Main.css';
 import { Link } from "react-router-dom";
+import '../styles/Main.css';
+import ReseñasCarousel from "./ReseñasCarousel";
+import CarruselBootstrap from "./CarruselBootstrap";
+
 function Main() {
     return (
 
@@ -35,6 +38,8 @@ function Main() {
             <Link to="/productos">
                 <button className="main-button">Ver catálogo de libros</button>
             </Link>
+            <ReseñasCarousel />
+            <CarruselBootstrap />
         </main>
 
     );

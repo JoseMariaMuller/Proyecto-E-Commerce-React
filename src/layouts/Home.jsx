@@ -1,4 +1,4 @@
-import Footer from "../components/Footer"
+
 import Header from "../components/Header"
 import Main from "../components/Main"
 
@@ -10,6 +10,7 @@ function Home() {
             <main className="main-content">
                 <Main />
             </main>
+            
             
         </div>
     );
