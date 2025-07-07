@@ -23,7 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 
-src/auth/firebase.js
+#src/auth/firebase.js
 
 # Archivos de variables de entorno
 .env.development
