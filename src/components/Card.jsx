@@ -16,6 +16,7 @@ function CardProducto({ producto }) {
                 <img
                     src="/imagenes/fondo-libros.png"
                     alt="fondo libros"
+                    loading="lazy"
                     style={{
                         position: "absolute",
                         top: 0, left: 0,
