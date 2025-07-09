@@ -30,11 +30,11 @@ function App() {
 
   useEffect(() => {
     AOS.init({
-      duration: 1000, // Duración de las animaciones en ms
-      easing: 'ease-in-out', // Tipo de easing
-      once: true, // Animación solo una vez al desplazarse
+      duration: 1000,
+      easing: 'ease-in-out',
+      once: true,
     });
-    AOS.refresh(); // Refresca AOS en caso de cambios en el DOM
+    AOS.refresh();
   }, []);
 
   return (
@@ -58,16 +58,16 @@ function App() {
       </div>
       <Footer />
       <ToastContainer
-        position="top-right" // Posición de las notificaciones
-        autoClose={3000}    // Tiempo en ms para que la notificación se cierre sola (3 segundos)
-        hideProgressBar={false} // Mostrar o no la barra de progreso
-        newestOnTop={false} // Mostrar notificaciones nuevas encima de las viejas
-        closeOnClick      // Cerrar la notificación al hacer clic en ella
-        rtl={false}       // Soporte de idiomas de derecha a izquierda
-        pauseOnFocusLoss  // Pausar el temporizador si la pestaña pierde el foco
-        draggable         // Permitir arrastrar la notificación
-        pauseOnHover      // Pausar el temporizador al pasar el mouse por encima
-        theme="colored"   // Estilo del tema (light, dark, colored)
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
       />
     </Router>
   )

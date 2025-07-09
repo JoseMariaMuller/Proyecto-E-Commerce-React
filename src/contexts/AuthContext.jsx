@@ -9,14 +9,14 @@ export function AuthProvider({ children }) {
   const login = (username) => {
     // Simulando la creación de un token (en una app real, esto sería generado por un servidor)
     const token = `fake-token-${username}`;
-    if(username == "admin@gmail.com"){ //contraseña : test12
+    if (username == "admin@gmail.com") {
       setAdmin(true)
     }
     localStorage.setItem('authToken', token);
     setUser(username);
   };
 
-  function logearGmail(){
+  function logearGmail() {
     logearG().then((data) => {
       console.log(data)
       const token = `fake-token-${data.email}`;
@@ -31,12 +31,12 @@ export function AuthProvider({ children }) {
     setAdmin(false)
   };
 
-  function verificacionLog(){
+  function verificacionLog() {
     const userToken = localStorage.getItem("authToken")
-    if(userToken && userToken == "fake-token-admin@gmail.com"){
+    if (userToken && userToken == "fake-token-admin@gmail.com") {
       setAdmin(true)
       return
-    }if(userToken){
+    } if (userToken) {
       setUser(userToken)
     }
   }
@@ -45,6 +45,6 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider value={{ logearGmail, user, login, logout, admin, verificacionLog }}>
       {children}
-    </AuthContext.Provider> );
+    </AuthContext.Provider>);
 }
 export const useAuthContext = () => useContext(AuthContext);

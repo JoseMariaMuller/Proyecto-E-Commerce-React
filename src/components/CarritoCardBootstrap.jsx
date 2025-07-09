@@ -1,14 +1,9 @@
-// src/components/CarritoCardBootstrap.jsx
-
 import { Card, Row, Col, Button } from "react-bootstrap";
-import { useContext } from "react"; 
 import { Link } from "react-router-dom"; // ¡Importa Link!
-// Ya no es necesario AuthContext aquí ya que la lógica de admin se maneja en CarritoBootstrap
-// import { AuthContext } from "../contexts/AuthContext.jsx"; 
+
 
 function CarritoCardBootstrap({ producto, funcionDisparadora, incrementarCantidad, decrementarCantidad }) {
-    // Si la lógica de admin se maneja en el padre, no necesitas esto aquí
-    // const { admin } = useContext(AuthContext); 
+
 
     if (!producto || !producto.imagen) {
         return (
@@ -74,14 +69,14 @@ function CarritoCardBootstrap({ producto, funcionDisparadora, incrementarCantida
                                             +
                                         </Button>
                                     </div>
-                                    
+
                                     <p className="mb-2"><strong>Precio:</strong> ${producto.price}</p>
                                     <p className="mb-0"><strong>Subtotal:</strong> ${(producto.cantidad * producto.price).toFixed(2)}</p>
                                 </div>
                                 <Button variant="danger" className="w-100 mb-2" onClick={borrarDelCarrito}>
                                     🗑️ Eliminar
                                 </Button>
-                                {/* --- ¡AQUÍ ESTÁ EL CAMBIO! --- */}
+
                                 <Link to="/productos" className="btn btn-outline-primary w-100">
                                     ⬅️ Ver más productos
                                 </Link>

@@ -1,4 +1,3 @@
-/* app.css */
 #root {
   width: 100%;
   min-height: 100vh;
@@ -10,6 +9,5 @@
   flex: 1;
   padding: 2rem;
   margin: 0 auto;
-  max-width: 1400px; 
+  max-width: 1400px;
 }
-

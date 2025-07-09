@@ -58,14 +58,11 @@ export function CarritoProvider({ children }) {
         setProductosCarrito((prevCarrito) =>
             prevCarrito.map(item =>
                 item.id === idProducto
-                    ? { ...item, cantidad: Math.max(1, item.cantidad - 1) } // Asegura que la cantidad no sea menor a 1
+                    ? { ...item, cantidad: Math.max(1, item.cantidad - 1) } 
                     : item
             )
-            // No filtramos aquí si la cantidad llega a 0, la dejaremos en 1
-            // Si quisieras que al llegar a 0 se elimine, podrías añadir .filter(item => item.cantidad > 0)
         );
     };
-    // --- FIN NUEVAS FUNCIONES ---
 
     return (
         <CarritoContext.Provider
@@ -74,8 +71,8 @@ export function CarritoProvider({ children }) {
                 agregarAlCarrito,
                 vaciarCarrito,
                 borrarProductoCarrito,
-                incrementarCantidad, // <--- Exportar la nueva función
-                decrementarCantidad  // <--- Exportar la nueva función
+                incrementarCantidad, 
+                decrementarCantidad  
             }}
         >
             {children}

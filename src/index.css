@@ -1,6 +1,3 @@
-/* src/index.css */
-
-/* --- ¡Importa las fuentes de Google Fonts al principio del archivo! --- */
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;700&display=swap');
 
 :root {
@@ -12,8 +9,8 @@
   --gray: #6c757d;
   --light-gray: #e9ecef;
   
-  /* --- ¡Define la fuente principal para todo el sitio aquí! --- */
-  font-family: 'Open Sans', sans-serif; /* Fuente para el cuerpo del texto */
+  
+  font-family: 'Open Sans', sans-serif; 
   line-height: 1.6;
   font-weight: 400;
 
@@ -27,10 +24,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* --- Aplica la fuente de títulos a los encabezados --- */
+
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Merriweather', serif; /* Fuente para los títulos */
-  font-weight: 700; /* Asumo que importaste el peso 700 para títulos */
+  font-family: 'Merriweather', serif; 
+  font-weight: 700; 
 }
 
 * {

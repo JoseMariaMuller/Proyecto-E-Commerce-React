@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../contexts/AuthContext';
 import { crearUsuario, loginEmailPass } from '../auth/firebase';
 import { dispararSweetBasico } from '../assets/SweetAlert';
-import { Container, Form, Button, Alert } from "react-bootstrap";
+import { Container, Form, Button, Alert, InputGroup } from "react-bootstrap";
 
 function Login2() {
   const [usuario, setUsuario] = useState('');
   const [password, setPassword] = useState('');
   const [show, setShow] = useState(true);
   const [errorLogin, setErrorLogin] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const { login, user, logout, admin, logearGmail } = useAuthContext();
   const navigate = useNavigate();
@@ -81,6 +82,10 @@ function Login2() {
     logout();
   }
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   if (user || admin) {
     return (
       <Container className="my-5 text-center">
@@ -94,14 +99,14 @@ function Login2() {
   return (
     <div className="d-flex justify-content-center align-items-center min-vh-100">
       <Container>
-        <div className="w-100 mx-auto" style={{ maxWidth: "700px" }}> {/* Se ajusta a 700px para igualar los otros */}
+        <div className="w-100 mx-auto" style={{ maxWidth: "700px" }}>
           <Form onSubmit={show ? iniciarSesionEmailPass : registrarUsuario} className="shadow p-4 rounded bg-light">
             <h3 className="mb-4 text-center">{show ? "Iniciar Sesión" : "Registrarse"}</h3>
 
             {errorLogin && (
-                <Alert variant="danger" className="mb-3">
-                    {errorLogin}
-                </Alert>
+              <Alert variant="danger" className="mb-3">
+                {errorLogin}
+              </Alert>
             )}
 
             <Form.Group className="mb-3">
@@ -110,18 +115,33 @@ function Login2() {
                 value={usuario}
                 onChange={(e) => setUsuario(e.target.value)}
                 type="email"
+                autoComplete="username"
                 required
               />
             </Form.Group>
 
             <Form.Group className="mb-4">
               <Form.Label>Contraseña</Form.Label>
-              <Form.Control
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                type="password"
-                required
-              />
+              <InputGroup>
+                <Form.Control
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  type={showPassword ? "text" : "password"}
+                  autoComplete={show ? "current-password" : "new-password"}
+                  required
+                />
+                <Button
+                  variant="outline-secondary"
+                  onClick={togglePasswordVisibility}
+                  title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                >
+                  {showPassword ? (
+                    <i className="bi bi-eye-fill"></i> 
+                  ) : (
+                    <i className="bi bi-eye-slash-fill"></i> 
+                  )}
+                </Button>
+              </InputGroup>
             </Form.Group>
 
             <div className="d-flex justify-content-between mb-3">

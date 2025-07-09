@@ -28,7 +28,7 @@ export async function crearUsuario(email, password) {
         console.log(user);
         return user;
     } catch (error) {
-        console.error("Error al crear usuario:", error.code, error.message); // Usar console.error
+        console.error("Error al crear usuario:", error.code, error.message); 
         throw error;
     }
 }
@@ -38,15 +38,15 @@ auth.useDeviceLanguage();
 export async function logearG() {
     try {
         const result = await signInWithPopup(auth, provider);
-        console.log("Resultado de login con Google:", result); // Más descriptivo
+        console.log("Resultado de login con Google:", result); 
         const credential = GoogleAuthProvider.credentialFromResult(result);
         console.log("Credenciales de Google:", credential);
-        const token = credential.accessToken; // Si necesitas el token
+        const token = credential.accessToken; 
         const user = result.user;
         console.log("Usuario de Google:", user);
         return user;
     } catch (error) {
-        console.error("Error al logear con Google:", error); // Usar console.error
+        console.error("Error al logear con Google:", error);
         throw error;
     }
 }
@@ -59,7 +59,7 @@ export async function loginEmailPass(email, password) {
         console.log("Usuario de email/pass:", user);
         return user;
     } catch (error) {
-        console.error("Error al logear con email/pass:", error.code, error.message); // Usar console.error
+        console.error("Error al logear con email/pass:", error.code, error.message); 
         throw error;
     }
 }
@@ -68,7 +68,7 @@ export async function loginEmailPass(email, password) {
 ///////////////////// BASE DE DATOS FIRESTORE ////////////////////////
 ////////////////////////////////////////////////////////////////
 
-export const db = getFirestore(app); // Exporta db también, si es necesario en otros lugares
+export const db = getFirestore(app); 
 
 export async function crearProducto(producto) {
     try {
@@ -77,13 +77,13 @@ export async function crearProducto(producto) {
             imagen: producto.imagen,
             price: producto.price,
             description: producto.description,
-            createdAt: new Date() // Buena práctica añadir una marca de tiempo
+            createdAt: new Date() 
         });
         console.log("Document written with ID from Firebase utility: ", docRef.id);
-        return docRef.id; // Retorna el ID para que el contexto sepa que ha terminado
+        return docRef.id; 
     } catch (e) {
         console.error("Error adding document in crearProducto (Firebase utility): ", e);
-        throw e; // Relanza el error para un manejo de errores adecuado en la cadena
+        throw e; 
     }
 }
 
@@ -97,7 +97,7 @@ export async function editarProductoFirebase(producto) {
             description: producto.description
         });
         console.log("Document updated with ID in Firebase utility:", producto.id);
-        return producto; // Retorna el producto actualizado o su ID
+        return producto; 
     } catch (e) {
         console.error("Error updating document in editarProductoFirebase (Firebase utility): ", e);
         throw e;

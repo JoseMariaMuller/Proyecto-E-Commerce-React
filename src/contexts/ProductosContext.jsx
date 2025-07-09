@@ -5,10 +5,10 @@ const ProductosContext = createContext();
 
 export function ProductosProvider({ children }) {
     const [productos, setProductos] = useState([]);
-    const [productoEncontrado, setProductoEncontrado] = useState(null); // Mejor iniciar con null para un solo producto
-    const [productosOriginales, setProductosOriginales] = useState([]); // Usado para filtrado
+    const [productoEncontrado, setProductoEncontrado] = useState(null);
+    const [productosOriginales, setProductosOriginales] = useState([]);
 
-    function obtenerProductosFirebase(){
+    function obtenerProductosFirebase() {
         return new Promise((res, rej) => {
             obtenerProductosF()
                 .then(productosData => {
@@ -23,7 +23,7 @@ export function ProductosProvider({ children }) {
         });
     }
 
-    function obtenerProductoFirebase(id){
+    function obtenerProductoFirebase(id) {
         console.log("Intentando obtener producto de Firebase con ID:", id);
         return new Promise((res, rej) => {
             obtenerProductoEnFirebase(id)
@@ -35,11 +35,11 @@ export function ProductosProvider({ children }) {
                 .catch(err => {
                     console.error("Error al obtener el producto de Firebase:", err);
                     rej("Hubo un error al obtener el producto.");
-                }); 
+                });
         });
     }
 
-    function editarProductoF(producto){
+    function editarProductoF(producto) {
         return new Promise((res, rej) => {
             editarProductoFirebase(producto)
                 .then(editedProduct => {
@@ -54,7 +54,7 @@ export function ProductosProvider({ children }) {
         });
     }
 
-    function eliminarProductoFirebase(id){
+    function eliminarProductoFirebase(id) {
         return new Promise((res, rej) => {
             eliminarProductoF(id)
                 .then(() => {
@@ -71,7 +71,7 @@ export function ProductosProvider({ children }) {
     function agregarProductoFirebase(producto) {
         return new Promise(async (res, rej) => {
             try {
-                const docId = await crearProducto(producto); 
+                const docId = await crearProducto(producto);
                 console.log("Producto agregado a Firebase. ID:", docId);
                 res(docId);
             } catch (error) {
@@ -81,8 +81,8 @@ export function ProductosProvider({ children }) {
         });
     }
 
-    function filtrarProductos(filtro){
-        if(filtro.length === 0){
+    function filtrarProductos(filtro) {
+        if (filtro.length === 0) {
             setProductos(productosOriginales);
             return;
         }
@@ -105,7 +105,7 @@ export function ProductosProvider({ children }) {
             productoEncontrado,
         }}>
             {children}
-        </ProductosContext.Provider> 
+        </ProductosContext.Provider>
     );
 }
 

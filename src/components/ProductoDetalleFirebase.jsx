@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import "../styles/ProductoDetalle.css";
-import { dispararSweetBasico } from "../assets/SweetAlert"; 
+import { dispararSweetBasico } from "../assets/SweetAlert";
 import { CarritoContext } from "../contexts/CarritoContext";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useProductosContext } from "../contexts/ProductosContext";
@@ -10,7 +9,7 @@ import { Spinner } from "react-bootstrap";
 function ProductoDetalleFirebase() {
   const navegar = useNavigate();
 
-  const { admin } = useAuthContext(); // Ya tienes el estado 'admin'
+  const { admin } = useAuthContext();
   const { agregarAlCarrito } = useContext(CarritoContext);
   const { productoEncontrado, eliminarProductoFirebase, obtenerProductoFirebase } = useProductosContext();
 
@@ -116,8 +115,6 @@ function ProductoDetalleFirebase() {
           <p className="text-muted">{productoEncontrado.description}</p>
           <h4 className="text-primary mb-4">${productoEncontrado.price}</h4>
 
-          {/* --- ¡AQUÍ ESTÁ EL CAMBIO PRINCIPAL! --- */}
-          {/* Mostramos los controles de cantidad y el botón "Agregar al carrito" SOLO SI NO ERES ADMIN */}
           {!admin && (
             <>
               <div className="d-flex align-items-center mb-3">
@@ -132,7 +129,6 @@ function ProductoDetalleFirebase() {
             </>
           )}
 
-          {/* Los botones de administrador (Editar, Eliminar) se muestran SOLO SI ERES ADMIN */}
           {admin && (
             <>
               <div className="d-flex gap-2 mb-2">

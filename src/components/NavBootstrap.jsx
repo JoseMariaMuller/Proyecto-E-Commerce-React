@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, useRef } from "react"; // Importa useEffect y useRef
+import { useContext, useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Navbar, Nav, Container, Badge } from "react-bootstrap";
 import { CarritoContext } from "../contexts/CarritoContext";
@@ -8,40 +8,31 @@ import { FaShoppingCart } from "react-icons/fa";
 function NavBoostrap() {
   const { productosCarrito } = useContext(CarritoContext);
   const { admin } = useAuthContext();
-
   const [expanded, setExpanded] = useState(false);
-  
-  // 1. Crear una referencia para el elemento Navbar
   const navbarRef = useRef(null);
 
-  // Función para cerrar el navbar (la misma que ya tienes)
+
   const handleNavLinkClick = () => {
-    setExpanded(false); 
+    setExpanded(false);
   };
 
-  // 2. useEffect para manejar clics fuera del Navbar
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Si el navbar está expandido Y el clic no fue dentro del Navbar
       if (expanded && navbarRef.current && !navbarRef.current.contains(event.target)) {
-        setExpanded(false); // Cierra el menú
+        setExpanded(false);
       }
     };
-
-    // Añadir el event listener al documento cuando el componente se monta o 'expanded' cambia
     document.addEventListener("mousedown", handleClickOutside);
-
-    // Remover el event listener cuando el componente se desmonta (limpieza)
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [expanded]); // El efecto se vuelve a ejecutar si 'expanded' cambia
+  }, [expanded]);
 
   return (
     <Navbar bg="dark" variant="dark" expand="lg" sticky="top"
-      expanded={expanded} 
-      onToggle={() => setExpanded(!expanded)} 
-      ref={navbarRef} // 3. Asignar la referencia al Navbar
+      expanded={expanded}
+      onToggle={() => setExpanded(!expanded)}
+      ref={navbarRef}
     >
       <Container>
         <Navbar.Brand as={Link} to="/" onClick={handleNavLinkClick}>

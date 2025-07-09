@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "../styles/Productos.css";
+
 import { useProductosContext } from "../contexts/ProductosContext";
 import CardProducto from "./Card";
 import { Helmet } from "react-helmet";
