@@ -4,7 +4,7 @@ import { useProductosContext } from "../contexts/ProductosContext";
 import CardProducto from "./Card";
 import { Helmet } from "react-helmet";
 import { FaSearch } from "react-icons/fa";
-import { Col, Row } from "react-bootstrap";
+import { Col, Row, Spinner } from "react-bootstrap";
 
 function ProductosContainerFirebase() {
     const { productos, obtenerProductosFirebase, filtrarProductos } = useProductosContext();
@@ -36,16 +36,26 @@ function ProductosContainerFirebase() {
     const cambiarPagina = (numeroPagina) => setPaginaActual(numeroPagina);
 
     if (cargando) {
-        return <p>Cargando productos...</p>;
+        return (
+            <div className="text-center my-5">
+                <Spinner animation="border" variant="primary" />
+                <p className="mt-3">Cargando productos...</p>
+            </div>
+        );
     }
+
     if (error) {
-        return <p>{error}</p>;
+        return (
+            <Alert variant="danger" className="text-center">
+                {error}
+            </Alert>
+        );
     }
 
     return (
         <div className="container py-4">
             <Helmet>
-                <title>Productos | Mi Tienda</title>
+                <title>Productos | Librería Aurora</title>
                 <meta name="description" content="Explora nuestra variedad de productos." />
             </Helmet>
 

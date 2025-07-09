@@ -1,6 +1,6 @@
 import { useProductosContext } from "../contexts/ProductosContext";
 import { useEffect, useState } from "react";
-import { Carousel, Container } from "react-bootstrap";
+import { Carousel, Container, Spinner } from "react-bootstrap";
 
 function CarruselBootstrap() {
     const { productos, obtenerProductosFirebase } = useProductosContext();
@@ -15,9 +15,18 @@ function CarruselBootstrap() {
     }, []);
 
     const primerosTres = productos.slice(0, 3);
+if (cargando) {
+    return (
+        <div className="text-center my-5">
+            <Spinner animation="border" variant="primary" />
+            <p className="mt-3">Cargando carrusel...</p>
+        </div>
+    );
+}
 
-    if (cargando) return <p className="text-center">Cargando carrusel...</p>;
-    if (primerosTres.length === 0) return <p className="text-center">No hay productos para mostrar.</p>;
+if (primerosTres.length === 0) {
+    return <p className="text-center">No hay productos para mostrar.</p>;
+}
 
     return (
         <Container className="my-5 d-flex justify-content-center">

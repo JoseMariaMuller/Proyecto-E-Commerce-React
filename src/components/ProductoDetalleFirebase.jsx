@@ -1,42 +1,43 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import "../styles/ProductoDetalle.css";
-import { dispararSweetBasico } from "../assets/SweetAlert";
+import { dispararSweetBasico } from "../assets/SweetAlert"; 
 import { CarritoContext } from "../contexts/CarritoContext";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useProductosContext } from "../contexts/ProductosContext";
+import { Spinner } from "react-bootstrap";
 
-function ProductoDetalleFirebase({ }) {
-
+function ProductoDetalleFirebase() {
   const navegar = useNavigate();
 
-  const { admin } = useAuthContext();
+  const { admin } = useAuthContext(); // Ya tienes el estado 'admin'
   const { agregarAlCarrito } = useContext(CarritoContext);
   const { productoEncontrado, eliminarProductoFirebase, obtenerProductoFirebase } = useProductosContext();
 
   const { id } = useParams();
-  //const [producto, setProducto] = useState(null);
   const [cantidad, setCantidad] = useState(1);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
 
-  console.log(id)
-
   useEffect(() => {
-    obtenerProductoFirebase(id).then(() => {
-      console.log("test")
+    if (productoEncontrado && productoEncontrado.id === id) {
       setCargando(false);
-    }).catch((error) => {
-      if (error == "Producto no encontrado") {
-        setError("Producto no encontrado")
-      }
-      if (error == "Hubo un error al obtener el producto.") {
-        setError("Hubo un error al obtener el producto.");
-      }
-      setCargando(false);
-    })
-  }, [id]);
-
+    } else {
+      obtenerProductoFirebase(id)
+        .then(() => {
+          setCargando(false);
+        })
+        .catch((err) => {
+          console.error("Error al obtener el producto:", err);
+          if (err.message === "Producto no encontrado") {
+            setError("Producto no encontrado");
+          } else {
+            setError("Hubo un error al obtener el producto.");
+          }
+          setCargando(false);
+        });
+    }
+  }, [id, obtenerProductoFirebase, productoEncontrado]);
 
   function funcionCarrito() {
     if (cantidad < 1) return;
@@ -44,13 +45,40 @@ function ProductoDetalleFirebase({ }) {
     agregarAlCarrito({ ...productoEncontrado, cantidad });
   }
 
-  function dispararEliminar() {
-    eliminarProductoFirebase(id).then(() => {
-      navegar("/productos")
-    }).catch((error) => {
-      dispararSweetBasico("Hubo un problema al agregar el producto", error, "error", "Cerrar")
-    })
-  }
+  const dispararEliminar = async () => {
+    const result = await dispararSweetBasico(
+      "¿Estás seguro?",
+      "¡No podrás revertir esta acción! ¿Deseas continuar?",
+      "warning",
+      "Sí, eliminar!",
+      true,
+      "Cancelar"
+    );
+
+    if (result.isConfirmed) {
+      try {
+        await eliminarProductoFirebase(id);
+
+        await dispararSweetBasico(
+          "¡Eliminado!",
+          "El producto ha sido eliminado exitosamente.",
+          "success",
+          "Aceptar"
+        );
+        navegar("/productos");
+      } catch (error) {
+        console.error("Error al eliminar producto:", error);
+        dispararSweetBasico(
+          "Error al eliminar",
+          `Hubo un problema: ${error.message || "Error desconocido"}`,
+          "error",
+          "Cerrar"
+        );
+      }
+    } else if (result.isDismissed) {
+      console.log("Eliminación cancelada por el usuario.");
+    }
+  };
 
   function sumarContador() {
     setCantidad(cantidad + 1);
@@ -60,9 +88,16 @@ function ProductoDetalleFirebase({ }) {
     if (cantidad > 1) setCantidad(cantidad - 1);
   }
 
-  if (cargando) return <p>Cargando producto...</p>;
+  if (cargando) {
+    return (
+      <div className="text-center my-5">
+        <Spinner animation="border" variant="primary" />
+        <p className="mt-3">Cargando detalles ...</p>
+      </div>
+    );
+  }
   if (error) return <p>{error}</p>;
-  if (!productoEncontrado) return null;
+  if (!productoEncontrado) return <p>Producto no disponible.</p>;
 
   return (
     <div className="container py-5">
@@ -81,18 +116,23 @@ function ProductoDetalleFirebase({ }) {
           <p className="text-muted">{productoEncontrado.description}</p>
           <h4 className="text-primary mb-4">${productoEncontrado.price}</h4>
 
-          <div className="d-flex align-items-center mb-3">
-            <button className="btn btn-outline-secondary me-2" onClick={restarContador}>-</button>
-            <span className="fs-5 px-3">{cantidad}</span>
-            <button className="btn btn-outline-secondary" onClick={sumarContador}>+</button>
-          </div>
-
+          {/* --- ¡AQUÍ ESTÁ EL CAMBIO PRINCIPAL! --- */}
+          {/* Mostramos los controles de cantidad y el botón "Agregar al carrito" SOLO SI NO ERES ADMIN */}
           {!admin && (
-            <button className="btn btn-success w-100 mb-3" onClick={funcionCarrito}>
-              🛒 Agregar al carrito
-            </button>
+            <>
+              <div className="d-flex align-items-center mb-3">
+                <button className="btn btn-outline-secondary me-2" onClick={restarContador}>-</button>
+                <span className="fs-5 px-3">{cantidad}</span>
+                <button className="btn btn-outline-secondary" onClick={sumarContador}>+</button>
+              </div>
+
+              <button className="btn btn-success w-100 mb-3" onClick={funcionCarrito}>
+                🛒 Agregar al carrito
+              </button>
+            </>
           )}
 
+          {/* Los botones de administrador (Editar, Eliminar) se muestran SOLO SI ERES ADMIN */}
           {admin && (
             <>
               <div className="d-flex gap-2 mb-2">
@@ -107,7 +147,6 @@ function ProductoDetalleFirebase({ }) {
       </div>
     </div>
   );
-
 }
 
 export default ProductoDetalleFirebase;

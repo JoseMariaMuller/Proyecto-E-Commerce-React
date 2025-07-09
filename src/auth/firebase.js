@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { createUserWithEmailAndPassword, FacebookAuthProvider, getAuth, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, setDoc } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_APIKEY,
@@ -17,217 +18,149 @@ const app = initializeApp(firebaseConfig);
 //////////////////////////////////////////////////////////////////////
 
 const provider = new GoogleAuthProvider();
-const auth = getAuth();
+const auth = getAuth(app);
 
-export function crearUsuario(email, password){
-    return(
-        new Promise((res, rej) => {
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                // Signed up 
-                console.log("Credenciales", userCredential)
-                const user = userCredential.user;
-                console.log(user)
-                res(user)
-                // ...
-            })
-            .catch((error) => {
-                console.log(error.code, error.message)
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                rej(error)
-                // ..
-            });
-        })
-    )
+export async function crearUsuario(email, password) {
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        console.log("Credenciales", userCredential);
+        const user = userCredential.user;
+        console.log(user);
+        return user;
+    } catch (error) {
+        console.error("Error al crear usuario:", error.code, error.message); // Usar console.error
+        throw error;
+    }
 }
 
-auth.useDeviceLanguage()
-export function logearG(){
-    return(
-        new Promise((res, rej) => {
-            signInWithPopup(auth, provider)
-            .then((result) => {
-                console.log("test", result)
-                // This gives you a Google Access Token. You can use it to access the Google API.
-                const credential = GoogleAuthProvider.credentialFromResult(result);
-                console.log("credenciales G", credential)
-                const token = credential.accessToken;
-                // The signed-in user info.
-                const user = result.user;
-                console.log("User", user)
-                res(user)
-                // IdP data available using getAdditionalUserInfo(result)
-                // ...
-            }).catch((error) => {
-                console.log("test error", error )
-                // Handle Errors here.
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                // The email of the user's account used.
-                const email = error.customData.email;
-                // The AuthCredential type that was used.
-                const credential = GoogleAuthProvider.credentialFromError(error);
-                rej()
-                // ...
-            });   
-        })
-    )
+auth.useDeviceLanguage();
 
+export async function logearG() {
+    try {
+        const result = await signInWithPopup(auth, provider);
+        console.log("Resultado de login con Google:", result); // Más descriptivo
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        console.log("Credenciales de Google:", credential);
+        const token = credential.accessToken; // Si necesitas el token
+        const user = result.user;
+        console.log("Usuario de Google:", user);
+        return user;
+    } catch (error) {
+        console.error("Error al logear con Google:", error); // Usar console.error
+        throw error;
+    }
 }
 
-export function loginEmailPass(email, password){
-    return(
-        new Promise((res, rej) => {
-            signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                // Signed in 
-                console.log("Credenciales", userCredential)
-                const user = userCredential.user;
-                console.log(user)
-                res(user)
-            })
-            .catch((error) => {
-                console.log(error.code)
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                rej(error)
-            });
-        })
-    )
+export async function loginEmailPass(email, password) {
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        console.log("Credenciales de email/pass:", userCredential);
+        const user = userCredential.user;
+        console.log("Usuario de email/pass:", user);
+        return user;
+    } catch (error) {
+        console.error("Error al logear con email/pass:", error.code, error.message); // Usar console.error
+        throw error;
+    }
 }
+
 /////////////////////////////////////////////////////////////////
-///////////////////// BASE DE DATOS FIRESTORE  //////// ////////
+///////////////////// BASE DE DATOS FIRESTORE ////////////////////////
 ////////////////////////////////////////////////////////////////
 
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, setDoc } from "firebase/firestore";
+export const db = getFirestore(app); // Exporta db también, si es necesario en otros lugares
 
-const db = getFirestore(app);
-
-export function crearProducto(producto) {
-    return new Promise(async (res, rej) => {
-        try {
+export async function crearProducto(producto) {
+    try {
         const docRef = await addDoc(collection(db, "productos"), {
+            name: producto.name,
+            imagen: producto.imagen,
+            price: producto.price,
+            description: producto.description,
+            createdAt: new Date() // Buena práctica añadir una marca de tiempo
+        });
+        console.log("Document written with ID from Firebase utility: ", docRef.id);
+        return docRef.id; // Retorna el ID para que el contexto sepa que ha terminado
+    } catch (e) {
+        console.error("Error adding document in crearProducto (Firebase utility): ", e);
+        throw e; // Relanza el error para un manejo de errores adecuado en la cadena
+    }
+}
+
+export async function editarProductoFirebase(producto) {
+    try {
+        const docRef = doc(db, "productos", producto.id);
+        await setDoc(docRef, {
             name: producto.name,
             imagen: producto.imagen,
             price: producto.price,
             description: producto.description
         });
+        console.log("Document updated with ID in Firebase utility:", producto.id);
+        return producto; // Retorna el producto actualizado o su ID
+    } catch (e) {
+        console.error("Error updating document in editarProductoFirebase (Firebase utility): ", e);
+        throw e;
+    }
+}
 
-        console.log("Document written with ID: ", docRef.id);
-        res(docRef)
+export async function eliminarProductoF(id) {
+    try {
+        await deleteDoc(doc(db, "productos", id));
+        console.log("Document deleted with ID in Firebase utility:", id);
+        return true;
+    } catch (e) {
+        console.error("Error deleting document in eliminarProductoF (Firebase utility): ", e);
+        throw e;
+    }
+}
 
-        } catch (e) {
-        console.error("Error adding document: ", e);
-        rej(e)
+export async function obtenerProductosF() {
+    try {
+        const productos = [];
+        const querySnapshot = await getDocs(collection(db, "productos"));
+        console.log("Query Snapshot de Firebase:", querySnapshot);
+
+        querySnapshot.docs.forEach(doc => {
+            const data = doc.data();
+            productos.push({
+                id: doc.id,
+                name: data.name,
+                imagen: data.imagen,
+                price: data.price,
+                description: data.description
+            });
+        });
+        return productos;
+    } catch (error) {
+        console.error("Error al obtener los productos de Firebase:", error);
+        throw error;
+    }
+}
+
+export async function obtenerProductoEnFirebase(id) {
+    try {
+        const docRef = doc(db, "productos", id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            console.log("Datos del documento desde la utilidad de Firebase:", docSnap.data());
+            const data = docSnap.data();
+            const producto = {
+                id: docSnap.id,
+                name: data.name,
+                imagen: data.imagen,
+                price: data.price,
+                description: data.description
+            };
+            console.log("Producto obtenido de la utilidad de Firebase:", producto);
+            return producto;
+        } else {
+            console.log("¡No existe tal documento en Firebase!");
+            throw new Error("Producto no encontrado.");
         }
-    });
+    } catch (error) {
+        console.error("Error al obtener el producto de la utilidad de Firebase:", error);
+        throw error;
+    }
 }
-
-export function editarProductoFirebase(producto){
-    return(
-        new Promise(async (res, rej) => {
-            try{
-                await setDoc(doc(db, "productos", producto.id), {
-                    name: producto.name,
-                    imagen: producto.imagen,
-                    price: producto.price,
-                    description: producto.description
-                })
-                console.log("Document written ");
-                res()
-            }catch (e){
-                console.error("Error adding document: ", e);
-                rej(e)
-            }
-        })
-    )
-}
-
-export function eliminarProductoF(id){
-    return(
-        new Promise(async(res, rej) => {
-            try{
-                await deleteDoc(doc(db, "productos", id))
-                res()
-            }catch (e){
-                console.error("Error adding document: ", e);
-                rej(e)
-            }
-
-        })
-    )
-}
-
-export function obtenerProductosF() {
-    return(
-        new Promise(async (res, rej) => {
-                try {
-                    const querySnapshot = await getDocs(collection(db, "productos"));
-                    console.log(querySnapshot, "respuesta al getDocs")
-                    
-                    const resultados = querySnapshot.docs.map(doc => {
-                        console.log(doc, "documento sin ejecutar metodo .data()")
-                        const data = doc.data();
-                        console.log(data, "doc con data extraida")
-                        return {
-                            id: doc.id,
-                            name: data.name,
-                            imagen: data.imagen,
-                            price: data.price,
-                            description: data.description
-                        };
-                    });
-
-                    res (resultados);
-                } catch (error) {
-                    console.error("Error al obtener los usuarios:", error);
-                    rej (error);
-                }
-        })
-    )
-}
-
-export function obtenerProductoEnFirebase(id) {
-    return(
-        new Promise(async (res, rej) => {
-                try {
-                    const docRef = doc(db, "productos", id);
-                    const docSnap = await getDoc(docRef);
-
-                    if (docSnap.exists()) {
-                        console.log("Document data:", docSnap.data());
-                        const data = docSnap.data();
-                        const producto = {
-                            id: docSnap.id,
-                            name: data.name,
-                            imagen: data.imagen,
-                            price: data.price,
-                            description: data.description
-                        }
-                        console.log(producto)
-                        res(producto)
-                    } else {
-                    // docSnap.data() will be undefined in this case
-                    console.log("No such document!");
-                        rej("No such document!")
-                    }
-                } catch (error) {
-                    console.error("Error al obtener los usuarios:", error);
-                    rej (error);
-                }
-        })
-    )
-}
-
-/*crearProducto("test", "url", 23, "klasjdklsajdsaldkklasdljka").then(() => {
-    console.log("si")
-}).catch((error) => {
-    console.log(error)
-})*/
-
-/*obtenerProductos().then((prod) => {
-    console.log(prod)
-}).catch((error) => {
-    console.log(error)
-})*/

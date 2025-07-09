@@ -1,6 +1,15 @@
-import { Card, Row, Col, Button } from "react-bootstrap";
+// src/components/CarritoCardBootstrap.jsx
 
-function CarritoCardBootstrap({ producto, funcionDisparadora }) {
+import { Card, Row, Col, Button } from "react-bootstrap";
+import { useContext } from "react"; 
+import { Link } from "react-router-dom"; // ¡Importa Link!
+// Ya no es necesario AuthContext aquí ya que la lógica de admin se maneja en CarritoBootstrap
+// import { AuthContext } from "../contexts/AuthContext.jsx"; 
+
+function CarritoCardBootstrap({ producto, funcionDisparadora, incrementarCantidad, decrementarCantidad }) {
+    // Si la lógica de admin se maneja en el padre, no necesitas esto aquí
+    // const { admin } = useContext(AuthContext); 
+
     if (!producto || !producto.imagen) {
         return (
             <Card className="mb-3 border-danger">
@@ -26,7 +35,7 @@ function CarritoCardBootstrap({ producto, funcionDisparadora }) {
                             style={{
                                 width: "100%",
                                 height: "auto",
-                                objectFit: "contain", 
+                                objectFit: "contain",
                             }}
                         />
                     </Col>
@@ -37,23 +46,46 @@ function CarritoCardBootstrap({ producto, funcionDisparadora }) {
                                 <Card.Title>{producto.name}</Card.Title>
                                 <Card.Text className="text-muted">{producto.description}</Card.Text>
                             </Col>
-                            <Col md={4}>
+                            <Col xs={12} md={6}>
                                 <div style={{
                                     border: "1px solid #ddd",
                                     borderRadius: "6px",
                                     padding: "10px",
                                     backgroundColor: "#f9f9f9",
                                     textAlign: "left",
+                                    marginBottom: "15px"
                                 }}>
-                                    <p><strong>Cantidad:</strong> {producto.cantidad}</p>
-                                    <p><strong>Precio:</strong> {producto.price} $</p>
-                                    <p><strong>Subtotal:</strong> {(producto.cantidad * producto.price).toFixed(2)} $</p>
+                                    <p className="mb-2"><strong>Cantidad:</strong></p>
+                                    <div className="d-flex align-items-center mb-3">
+                                        <Button
+                                            variant="outline-secondary"
+                                            size="sm"
+                                            onClick={() => decrementarCantidad(producto.id)}
+                                            disabled={producto.cantidad <= 1}
+                                        >
+                                            -
+                                        </Button>
+                                        <span className="mx-2 fs-5">{producto.cantidad}</span>
+                                        <Button
+                                            variant="outline-secondary"
+                                            size="sm"
+                                            onClick={() => incrementarCantidad(producto.id)}
+                                        >
+                                            +
+                                        </Button>
+                                    </div>
+                                    
+                                    <p className="mb-2"><strong>Precio:</strong> ${producto.price}</p>
+                                    <p className="mb-0"><strong>Subtotal:</strong> ${(producto.cantidad * producto.price).toFixed(2)}</p>
                                 </div>
-                            <Button variant="danger" className="mt-4" onClick={borrarDelCarrito}>
-                                Eliminar
-                            </Button>
+                                <Button variant="danger" className="w-100 mb-2" onClick={borrarDelCarrito}>
+                                    🗑️ Eliminar
+                                </Button>
+                                {/* --- ¡AQUÍ ESTÁ EL CAMBIO! --- */}
+                                <Link to="/productos" className="btn btn-outline-primary w-100">
+                                    ⬅️ Ver más productos
+                                </Link>
                             </Col>
-
                         </Row>
                     </Col>
                 </Row>

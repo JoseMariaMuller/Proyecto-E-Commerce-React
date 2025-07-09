@@ -32,7 +32,8 @@ const reseñas = [
 
 function ReseñasCarousel() {
     return (
-        <div className="reseñas-carousel-container mt-5 mb-5">
+      
+        <div className="reseñas-carousel-container mt-5 mb-5" data-aos="fade-up" data-aos-offset="150">
             <h4 className="text-center mb-4">📢 Lo que opinan nuestros lectores</h4>
             <Carousel indicators={false} controls={false} interval={5000} pause={false} fade>
                 {reseñas.map((r, i) => (

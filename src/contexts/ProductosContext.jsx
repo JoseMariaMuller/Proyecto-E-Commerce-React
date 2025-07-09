@@ -1,218 +1,112 @@
 import React, { createContext, useState, useContext } from 'react';
 import { crearProducto, editarProductoFirebase, eliminarProductoF, obtenerProductoEnFirebase, obtenerProductosF } from '../auth/firebase';
-// Crear el contexto de de los productos
+
 const ProductosContext = createContext();
+
 export function ProductosProvider({ children }) {
-    const [productos, setProductos] = useState([])
-    const [productoEncontrado, setProductoEncontrado] = useState([])
-    const [productosOriginales, setProductosOriginales] = useState([])
-
-    function obtenerProductos() {
-        return(
-            new Promise((res, rej) => {
-                fetch('https://681c09aa6ae7c794cf707bcb.mockapi.io/productos')
-                    .then((respuesta) =>
-                        respuesta.json()
-                    )
-                    .then((datos) => {
-                        console.log(datos)
-                        setProductos(datos)
-                        res(datos)
-                        //setCargando(false);
-                    })
-                    .catch((error) => {
-                        console.log("Error", error)
-                        //setError('Hubo un problema al cargar los productos.');
-                        //setCargando(false);
-                        rej(error)
-                    })
-                ;
-            })
-        )
-    }
-
-    const agregarProducto = (producto) => {
-        return(
-            new Promise(async (res, rej) => {
-                try {
-                    const respuesta = await fetch('https://681c09aa6ae7c794cf707bcb.mockapi.io/productos', {
-                        method: 'POST',
-                        headers: {
-                        'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(producto),
-                    });
-
-                    if (!respuesta.ok) {
-                            throw new Error('Error al agregar el producto.');
-                    }
-                    const data = await respuesta.json();
-                            console.log('Producto agregado:', data);
-                            res(data)
-                            //alert('Producto agregado correctamente');
-                    } catch (error) {
-                        console.error(error.message);
-                        //alert('Hubo un problema al agregar el producto.');
-                        rej(error.message)
-                    }
-            })
-        )
-    };
-
-    function obtenerProducto(id){
-        return(
-            new Promise((res, rej) => {
-               fetch("https://681c09aa6ae7c794cf707bcb.mockapi.io/productos")
-                .then((res) => res.json())
-                .then((datos) => {
-                    const productoEncontrado = datos.find((item) => item.id === id);
-                    if (productoEncontrado) {
-                    setProductoEncontrado(productoEncontrado);
-                    res(datos)
-                    } else {
-                        rej("Producto no encontrado")
-                    }
-                })
-                .catch((err) => {
-                    console.log("Error:", err);
-                    rej("Hubo un error al obtener el producto.");
-                }); 
-            })
-        )
-    }
+    const [productos, setProductos] = useState([]);
+    const [productoEncontrado, setProductoEncontrado] = useState(null); // Mejor iniciar con null para un solo producto
+    const [productosOriginales, setProductosOriginales] = useState([]); // Usado para filtrado
 
     function obtenerProductosFirebase(){
-        return(
-            new Promise((res, rej) => {
-                obtenerProductosF().then(productos => {
-                    setProductos(productos)
-                    setProductosOriginales(productos)
-                    res()
-                }).catch(error => {
-                    rej(error)
+        return new Promise((res, rej) => {
+            obtenerProductosF()
+                .then(productosData => {
+                    setProductos(productosData);
+                    setProductosOriginales(productosData);
+                    res();
                 })
-            })
-        )
+                .catch(error => {
+                    console.error("Error al obtener productos de Firebase:", error);
+                    rej(error);
+                });
+        });
     }
 
     function obtenerProductoFirebase(id){
-        console.log("test1")
-        return(
-            new Promise((res, rej) => {
-                obtenerProductoEnFirebase(id).then((producto) => {
-                    setProductoEncontrado(producto)
-                    console.log(producto)
-                    res()
-                }).catch((err) => {
-
-                    console.log("Error:", err);
+        console.log("Intentando obtener producto de Firebase con ID:", id);
+        return new Promise((res, rej) => {
+            obtenerProductoEnFirebase(id)
+                .then(producto => {
+                    setProductoEncontrado(producto);
+                    console.log("Producto encontrado en Firebase:", producto);
+                    res(producto);
+                })
+                .catch(err => {
+                    console.error("Error al obtener el producto de Firebase:", err);
                     rej("Hubo un error al obtener el producto.");
                 }); 
-            })
-        )
+        });
     }
 
     function editarProductoF(producto){
-        return(
-            new Promise((res, rej) => {
-                editarProductoFirebase(producto).then(producto => {
-                    setProductoEncontrado(producto)
-                    //console.log(producto)
-                    res()
-                }).catch(error => {
-                    rej (error)
+        return new Promise((res, rej) => {
+            editarProductoFirebase(producto)
+                .then(editedProduct => {
+                    setProductoEncontrado(editedProduct);
+                    console.log("Producto editado en Firebase:", editedProduct);
+                    res(editedProduct);
                 })
-            })
-        )
+                .catch(error => {
+                    console.error("Error al editar producto en Firebase:", error);
+                    rej(error);
+                });
+        });
     }
 
     function eliminarProductoFirebase(id){
-        return(
-            new Promise((res, rej) => {
-                eliminarProductoF(id).then(() => {
-                    res()
-                }).catch(error => {
-                    rej(error)
+        return new Promise((res, rej) => {
+            eliminarProductoF(id)
+                .then(() => {
+                    console.log("Producto eliminado de Firebase con ID:", id);
+                    res();
                 })
-            })
-        )
-    }
-
-    function editarProducto(producto){
-        return(
-            new Promise(async(res, rej) => {
-            try {
-                const respuesta = await fetch(`https://681c09aa6ae7c794cf707bcb.mockapi.io/productos/${producto.id}`, {
-                    method: 'PUT',
-                    headers: {
-                    'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(producto),
+                .catch(error => {
+                    console.error("Error al eliminar producto de Firebase:", error);
+                    rej(error);
                 });
-                if (!respuesta.ok) {
-                    throw new Error('Error al actualizar el producto.');
-                }
-                const data = await respuesta.json();
-                res(data)
+        });
+    }
+
+    function agregarProductoFirebase(producto) {
+        return new Promise(async (res, rej) => {
+            try {
+                const docId = await crearProducto(producto); 
+                console.log("Producto agregado a Firebase. ID:", docId);
+                res(docId);
             } catch (error) {
-                console.error(error.message);
-                rej(error)
+                console.error("Error al agregar producto en ProductosContext:", error);
+                rej(error);
             }
-            })
-        )
-    }
-
-    const eliminarProducto = (id) => {
-        const confirmar = window.confirm('¿Estás seguro de eliminar?');
-        if (confirmar) {
-            return(
-                new Promise(async (res, rej) => {
-                    try {
-                        const respuesta = await fetch(`https://681c09aa6ae7c794cf707bcb.mockapi.io/productos/${id}`, {
-                        method: 'DELETE',
-                        });
-                        if (!respuesta.ok) throw new Error('Error al eliminar');
-                        alert('Producto eliminado correctamente.');
-                        res()
-                    } catch (error) {
-                        console.error(error.message);
-                        alert('Hubo un problema al eliminar el producto.');
-                        rej(error)
-                    }
-                })
-            )
-        }
-    }
-
-    function agregarProductoFirebase(producto){
-        return(
-            new Promise((res, rej) => {
-                try{
-                    crearProducto(producto)
-                }catch(error){
-                    console.log(error)
-                    rej()
-                }
-            })
-        )
+        });
     }
 
     function filtrarProductos(filtro){
-        if(filtro.length < 0){
-            setProductos(productosOriginales)
+        if(filtro.length === 0){
+            setProductos(productosOriginales);
             return;
         }
 
-        const productosFiltrados = productosOriginales.filter((producto) =>
+        const productosFiltrados = productosOriginales.filter(producto =>
             producto.name.toLowerCase().includes(filtro.toLowerCase())
         );
-        setProductos(productosFiltrados)
+        setProductos(productosFiltrados);
     }
 
     return (
-        <ProductosContext.Provider value={{ agregarProductoFirebase, filtrarProductos, eliminarProductoFirebase, editarProductoF, obtenerProductosFirebase, obtenerProductoFirebase, obtenerProductos, productos, agregarProducto, obtenerProducto, productoEncontrado, editarProducto, eliminarProducto }}>
-        {children}
+        <ProductosContext.Provider value={{
+            agregarProductoFirebase,
+            filtrarProductos,
+            eliminarProductoFirebase,
+            editarProductoF,
+            obtenerProductosFirebase,
+            obtenerProductoFirebase,
+            productos,
+            productoEncontrado,
+        }}>
+            {children}
         </ProductosContext.Provider> 
     );
 }
+
 export const useProductosContext = () => useContext(ProductosContext);

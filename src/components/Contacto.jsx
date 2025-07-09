@@ -1,5 +1,7 @@
-import { useState } from "react";
+// src/components/Contacto.jsx
 
+import { useState } from "react";
+import { toast } from 'react-toastify'; 
 
 function Contacto() {
     const [formData, setFormData] = useState({
@@ -16,11 +18,69 @@ function Contacto() {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => { 
         e.preventDefault();
-        // Aquí podrías mandar el formData a un backend, email, etc.
-        console.log("Mensaje enviado:", formData);
-        alert("¡Gracias por tu mensaje! 📬");
+        
+        // --- VALIDACIONES DE CAMPOS ---
+
+        // Validación del campo 'Nombre'
+        if (!formData.nombre.trim()) { 
+            toast.warn("El campo 'Nombre' no puede estar vacío. Por favor, complétalo.", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+            });
+            return; // Detiene la ejecución si hay un error
+        }
+
+        // Validación del formato de 'Email'
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            toast.error("Por favor, ingresa un formato de email válido. Ejemplo: tu@correo.com", {
+                position: "top-center",
+                autoClose: 7000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+            });
+            return; // Detiene la ejecución si hay un error
+        }
+
+        // Validación del campo 'Mensaje'
+        if (!formData.mensaje.trim()) {
+            toast.warn("El campo 'Mensaje' no puede estar vacío. Por favor, escribe tu consulta o comentario.", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+            });
+            return; // Detiene la ejecución si hay un error
+        }
+
+        // --- SIMULACIÓN DE ENVÍO EXITOSO (sin backend) ---
+        // Si todas las validaciones pasaron, mostramos el mensaje de éxito
+        console.log("Mensaje enviado (simulado):", formData);
+        
+        toast.success("¡Gracias por tu mensaje! 📬 Nos pondremos en contacto pronto.", {
+            position: "top-right", 
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+        });
+
+        // Limpia el formulario después del "envío" exitoso
         setFormData({ nombre: "", email: "", mensaje: "" });
     };
 
@@ -37,7 +97,7 @@ function Contacto() {
                         name="nombre"
                         value={formData.nombre}
                         onChange={handleChange}
-                        required
+                        // Atributo 'required' eliminado para que las validaciones de Toastify tomen control
                     />
                 </div>
 
@@ -50,7 +110,7 @@ function Contacto() {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        required
+                        // Atributo 'required' eliminado
                     />
                 </div>
 
@@ -63,7 +123,7 @@ function Contacto() {
                         rows="4"
                         value={formData.mensaje}
                         onChange={handleChange}
-                        required
+                        // Atributo 'required' eliminado
                     />
                 </div>
 

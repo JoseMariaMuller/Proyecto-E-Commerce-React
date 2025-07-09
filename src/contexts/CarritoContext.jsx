@@ -42,6 +42,30 @@ export function CarritoProvider({ children }) {
         const nuevoCarrito = productosCarrito.filter((p) => p.id !== id);
         setProductosCarrito(nuevoCarrito);
     }
+    
+     // --- NUEVAS FUNCIONES PARA MODIFICAR CANTIDAD ---
+    const incrementarCantidad = (idProducto) => {
+        setProductosCarrito((prevCarrito) =>
+            prevCarrito.map(item =>
+                item.id === idProducto
+                    ? { ...item, cantidad: item.cantidad + 1 }
+                    : item
+            )
+        );
+    };
+
+    const decrementarCantidad = (idProducto) => {
+        setProductosCarrito((prevCarrito) =>
+            prevCarrito.map(item =>
+                item.id === idProducto
+                    ? { ...item, cantidad: Math.max(1, item.cantidad - 1) } // Asegura que la cantidad no sea menor a 1
+                    : item
+            )
+            // No filtramos aquí si la cantidad llega a 0, la dejaremos en 1
+            // Si quisieras que al llegar a 0 se elimine, podrías añadir .filter(item => item.cantidad > 0)
+        );
+    };
+    // --- FIN NUEVAS FUNCIONES ---
 
     return (
         <CarritoContext.Provider
@@ -49,7 +73,9 @@ export function CarritoProvider({ children }) {
                 productosCarrito,
                 agregarAlCarrito,
                 vaciarCarrito,
-                borrarProductoCarrito
+                borrarProductoCarrito,
+                incrementarCantidad, // <--- Exportar la nueva función
+                decrementarCantidad  // <--- Exportar la nueva función
             }}
         >
             {children}

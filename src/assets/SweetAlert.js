@@ -1,10 +1,27 @@
-import Swal from 'sweetalert2'
+// assets/SweetAlert.js
+import Swal from 'sweetalert2';
 
-export function dispararSweetBasico(titulo, text, icon, textoBoton) {
+// Añadimos 'cancelButtonText' como un parámetro opcional
+export function dispararSweetBasico(title, text, icon, confirmButtonText = 'Ok', showCancelButton = false, cancelButtonText = 'Cancelar') {
   return Swal.fire({
-    title: titulo,
+    title: title,
     text: text,
-    icon: icon,
-    confirmButtonText: textoBoton
+    icon: icon, 
+    confirmButtonText: confirmButtonText,
+    
+    toast: false,         
+    position: 'center',   
+    showConfirmButton: true, 
+    showCancelButton: showCancelButton,
+    cancelButtonText: cancelButtonText, // <-- Usamos el nuevo parámetro aquí
+    
+    allowOutsideClick: false, 
+    allowEscapeKey: false,   
+    
+    customClass: {
+      confirmButton: 'btn btn-primary mx-2', 
+      cancelButton: 'btn btn-danger mx-2'  
+    },
+    buttonsStyling: false 
   });
 }

@@ -3,6 +3,8 @@ import { useAuthContext } from '../contexts/AuthContext';
 import { useProductosContext } from '../contexts/ProductosContext';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { dispararSweetBasico } from '../assets/SweetAlert';
+import { Container, Form, Button } from "react-bootstrap";
+
 
 function FormularioProductoFirebase() {
   const { agregarProductoFirebase } = useProductosContext();
@@ -16,79 +18,98 @@ function FormularioProductoFirebase() {
     imagen: ''
   });
 
-  const validarFormulario = () => {
-    if (!producto.name.trim()) return "El nombre es obligatorio.";
-    if (!producto.price || producto.price <= 0) return "El precio debe ser mayor a 0.";
-    if (!producto.description.trim() || producto.description.length < 10)
-      return "La descripción debe tener al menos 10 caracteres.";
-    if (!producto.imagen.trim()) return "La URL de la imagen no debe estar vacía.";
-    return true;
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProducto({ ...producto, [name]: value });
+    setProducto({
+      ...producto,
+      [name]: name === 'price' ? parseFloat(value) || '' : value
+    });
   };
 
   const handleSubmit2 = async (e) => {
     e.preventDefault();
-    const validarForm = validarFormulario();
+    console.log("handleSubmit2 INICIADO. Estado actual del producto:", producto);
 
-    if (validarForm === true) {
-      try {
-        await agregarProductoFirebase(producto);
+    if (!producto.name.trim()) {
+      console.log("VALIDACIÓN FALLIDA: Nombre vacío. Disparando SweetAlert...");
+      dispararSweetBasico("Campo Obligatorio", "El nombre del producto es obligatorio.", "error", "Entendido");
+      return;
+    }
+    if (producto.price <= 0 || isNaN(producto.price)) {
+      console.log("VALIDACIÓN FALLIDA: Precio inválido. Disparando SweetAlert...");
+      dispararSweetBasico("Valor Inválido", "El precio debe ser un número mayor a 0.", "error", "Entendido");
+      return;
+    }
+    if (!producto.description.trim() || producto.description.length < 10) {
+      console.log("VALIDACIÓN FALLIDA: Descripción corta. Disparando SweetAlert...");
+      dispararSweetBasico("Descripción Corta", "La descripción debe tener al menos 10 caracteres.", "error", "Entendido");
+      return;
+    }
+    if (!producto.imagen.trim()) {
+      console.log("VALIDACIÓN FALLIDA: Imagen vacía. Disparando SweetAlert...");
+      dispararSweetBasico("Campo Obligatorio", "La URL de la imagen es obligatoria.", "error", "Entendido");
+      return;
+    }
+
+    try {
+      console.log("Validaciones PASADAS. Intentando agregar producto a Firebase...");
+      await agregarProductoFirebase(producto);
+      console.log("Producto agregado a Firebase con éxito (desde FormularioProductoFirebase).");
+
+      console.log("Disparando SweetAlert de éxito...");
+      const result = await dispararSweetBasico("✅ Éxito", "Producto agregado con éxito", "success", "Ver Productos");
+
+      if (result.isConfirmed) {
+        console.log("Usuario confirmó SweetAlert. Limpiando formulario y navegando a /productos.");
         setProducto({ name: '', price: '', description: '', imagen: '' });
-
-        
-        await dispararSweetBasico(
-          "Producto agregado con éxito",
-          "El nuevo libro fue guardado correctamente.",
-          "success",
-          "Ir al panel"
-        );
-
-        navigate('/admin');
-      } catch (error) {
-        dispararSweetBasico(
-          "Hubo un problema al agregar el producto",
-          error.message || error,
-          "error",
-          "Cerrar"
-        );
+        navigate('/productos');
+      } else {
+        console.log("SweetAlert de éxito cerrado sin confirmación. Limpiando formulario.");
+        setProducto({ name: '', price: '', description: '', imagen: '' });
       }
-    } else {
-      dispararSweetBasico("Error en la carga de producto", validarForm, "error", "Cerrar");
+
+    } catch (error) {
+      console.error("❌ Error en handleSubmit2 al guardar en Firebase:", error);
+      dispararSweetBasico("⚠️ Error", "Hubo un problema al guardar el producto. Inténtelo de nuevo.", "error", "Cerrar");
     }
   };
 
-  if (!admin) return <Navigate to="/login" replace />;
+  if (!admin) {
+    console.log("Usuario no es admin. Redirigiendo a /login.");
+    return <Navigate to="/login" replace />;
+  }
 
   return (
-    <form onSubmit={handleSubmit2} className="container mt-5 p-4 mb-5 shadow rounded bg-light" style={{ maxWidth: "600px" }}>
-      <h2 className="mb-4 text-center">Agregar Producto</h2>
-      {/* Inputs */}
-      <div className="mb-3">
-        <label htmlFor="nombre" className="form-label">Nombre:</label>
-        <input type="text" className="form-control" id="nombre" name="name" value={producto.name} onChange={handleChange} required />
-      </div>
+    <Container className="my-5">
+      <div className="w-100 mx-auto" style={{ maxWidth: "700px" }}> 
+        <Form onSubmit={handleSubmit2} className="shadow p-4 rounded bg-light">
+          <h2 className="mb-4 text-center">Agregar Producto</h2>
 
-      <div className="mb-3">
-        <label htmlFor="imagen" className="form-label">URL de la Imagen:</label>
-        <input type="text" className="form-control" id="imagen" name="imagen" value={producto.imagen} onChange={handleChange} required />
-      </div>
+          <Form.Group className="mb-3">
+            <Form.Label htmlFor="nombre">Nombre:</Form.Label>
+            <Form.Control type="text" id="nombre" name="name" value={producto.name} onChange={handleChange} required />
+          </Form.Group>
 
-      <div className="mb-3">
-        <label htmlFor="precio" className="form-label">Precio:</label>
-        <input type="number" className="form-control" id="precio" name="price" value={producto.price} onChange={handleChange} min="0" required />
-      </div>
+          <Form.Group className="mb-3">
+            <Form.Label htmlFor="imagen">URL de la Imagen:</Form.Label>
+            <Form.Control type="text" id="imagen" name="imagen" value={producto.imagen} onChange={handleChange} required />
+          </Form.Group>
 
-      <div className="mb-3">
-        <label htmlFor="descripcion" className="form-label">Descripción:</label>
-        <textarea className="form-control" id="descripcion" name="description" rows="3" value={producto.description} onChange={handleChange} required />
-      </div>
+          <Form.Group className="mb-3">
+            <Form.Label htmlFor="precio">Precio:</Form.Label>
+            <Form.Control type="number" id="precio" name="price" value={producto.price} onChange={handleChange} min="0" required />
+          </Form.Group>
 
-      <button type="submit" className="btn btn-primary w-100">Agregar Producto</button>
-    </form>
+          <Form.Group className="mb-3">
+            <Form.Label htmlFor="descripcion">Descripción:</Form.Label>
+            <Form.Control as="textarea" id="descripcion" name="description" rows="3" value={producto.description} onChange={handleChange} required />
+          </Form.Group>
+
+          <Button type="submit" variant="primary" className="w-100">Agregar Producto</Button>
+          <Button variant="secondary" className="w-100 mt-3" onClick={() => navigate('/productos')}>Cancelar</Button>
+        </Form>
+      </div>
+    </Container>
   );
 }
 
